@@ -277,7 +277,7 @@ pip install -r requirements.txt
 
 Start the API:
 
-python -m uvicorn openarm_pipeline.api --reload --app-dir src
+python -m uvicorn openarm_pipeline.api:app --reload --app-dir src
 
 Open:
 
