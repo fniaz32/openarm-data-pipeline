@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <title>OpenArm Data Collection</title>
+  </head>
+
+  <body>
+    <h1>OpenArm Data Collection Dashboard</h1>
+    <!-- basic start/stop controls for a recording -->
+    <button onclick="startRecording()">Start Recording</button>
+    <button onclick="stopRecording()">Stop Recording</button>
+
+    <h2>Status</h2>
+    <!-- status shown as json to keep it simple-->
+    <pre id="status">Loading...</pre>
+
+    <h2>CAN Setup Commands</h2>
+    <pre id="canCommands">Loading...</pre>
+
+    <h2>Episodes</h2>
+    <pre id="episodes">Loading...</pre>
+
+    <script>
+      async function startRecording() {
+        // send basic metadata w recording so that it's stored in episode file
+        await fetch("/recordings/start", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+            operator: "take-home-user",
+            task: "simulated_demo"
+          })
+        });
+
+        await refresh();
+      }
+
+      async function stopRecording() {
+        await fetch("/recordings/stop", {
+          method: "POST"
+        });
+
+        await refresh();
+      }
+
+      async function refresh() {
+        // poll API secondly so page feels live w/out websockets
+        const statusResponse = await fetch("/status");
+        const status = await statusResponse.json();
+
+        document.getElementById("status").textContent =
+          JSON.stringify(status, null, 2);
+
+        const canResponse = await fetch("/can/setup-commands");
+        const canCommands = await canResponse.json();
+
+        document.getElementById("canCommands").textContent =
+          JSON.stringify(canCommands, null, 2);
+
+        const episodesResponse = await fetch("/episodes");
+        const episodes = await episodesResponse.json();
+
+        document.getElementById("episodes").textContent =
+          JSON.stringify(episodes, null, 2);
+      }
+      // keep refreshing while backend acquisition loops
+      setInterval(refresh, 1000);
+      refresh();
+    </script>
+  </body>
+</html>
