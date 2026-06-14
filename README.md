@@ -9,7 +9,6 @@ Since I did not have access to a physical OpenArm system, all CAN telemetry and 
 Included in this project:
 
 -> OpenArm CAN setup scripts
-
 -> Simulated CAN telemetry (joint position, velocity, torque)
 
 -> Multi-camera simulation
